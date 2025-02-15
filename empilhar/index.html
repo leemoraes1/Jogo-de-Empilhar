@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Jogo de Empilhar</title>
+</head>
+<body>
+    <div class="navbar">
+        <span class="inicio">INICIO</span>
+    </div>
+    <div class="container">
+        <div class="caixadeinstrucao">
+            <h1>Instrução do Jogo</h1>
+            <p>Use as setas para mover os blocos </p>
+            <ul>
+                <li>Esquerda: move o bloco para a esquerda</li>
+                <li>Direita: move o bloco para a direita</li>   
+            </ul>
+            <p>Empilhe os blocos sem deixá-los cair!</p>
+        </div>
+        <!-- Aonde o jogo irá aparecer -->
+        <canvas id="gameCanvas" width="300" height="500"></canvas>
+        <!-- Mensagem de Game Over -->
+        <div id="gameOverMessage" class="game-over" style="display: none;">Clique em <br> "Reiniciar Jogo"</div>
+        <!-- Mensagem de Parabéns -->
+        <div id="parabens" class="parabens" style="display: none;">Parabéns, você concluiu o jogo!!!</div>
+    </div>
+    <div class="bottom-buttons">
+        <button class="verde" onclick="StartGame()">Iniciar Jogo</button>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
