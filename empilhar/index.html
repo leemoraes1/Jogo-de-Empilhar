@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Empilhar Blocos</title>
+    <style>
+        /* Estilos gerais da página */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #7647bb;  /* Cor de fundo roxa */
+            color: white;  /* Cor do texto */
+            font-family: Arial, sans-serif;  /* Fonte da página */
+        }
+
+        /* Estilo do container que contém as instruções e o canvas */
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80%;  /* Largura do container */
+            margin-top: 20px;  /* Margem superior */
+            padding: 65px;
+        }
+
+        /* Estilo da caixa de instruções */
+        .instrucoes {
+            background-color: #2b0c5d;  /* Cor de fundo roxa */
+            padding: 20px;  /* Espaçamento interno */
+            border-radius: 10px 0px 0px 10px;  /* Bordas arredondadas */
+            width: 400px;  /* Largura da caixa */
+            text-align: left;  /* Alinha o texto à esquerda */
+            height: 50vh;/*altura do container*/
+        }
+
+        /* Estilo do canvas onde o jogo ocorre */
+        canvas {
+            border: 1px solid rgb(64, 6, 121);  /* Borda preta */
+            background-color: rgb(226, 209, 209);  /* Cor de fundo branca */
+            border-radius: 0px 10px 10px 0px;
+        }
+
+        /* Estilo da mensagem que aparece quando o jogo acaba */
+        #mensagem {
+            font-size: 20px;  /* Tamanho da fonte */
+            font-weight: bold;  /* Deixa o texto em negrito */
+            color: #7647bb;
+            background-color: white;
+            margin-top: 10px;  /* Margem superior */
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        /* Estilo da barra superior (com o link para o início) */
+        .top-bar {
+            background-color: #5a2ea0;  /* Cor de fundo roxa */
+            width: 100%;  /* Largura total */
+            padding: 20px;  /* Espaçamento interno */
+            text-align: left;  /* Alinha o texto à esquerda */
+            
+        }
+
+        /* Estilo do link na barra superior */
+        .top-bar a {
+            background-color: #6fcf97;  /* Cor de fundo verde */
+            padding: 8px 15px;  /* Espaçamento interno */
+            font-weight: bold;  /* Deixa o texto em negrito */
+            text-decoration: none;  /* Remove o sublinhado */
+            color: black;  /* Cor do texto */
+            border-radius: 5px;  /* Bordas arredondadas */
+        }
+
+        /* Estilo do botão de reiniciar o jogo */
+        .reiniciar-btn {
+            background-color: #6fcf97;  /* Cor de fundo verde */
+            padding: 10px 20px;  /* Espaçamento interno */
+            font-weight: bold;  /* Deixa o texto em negrito */
+            border: none;  /* Remove a borda */
+            border-radius: 5px;  /* Bordas arredondadas */
+            margin-top: 15px;  /* Margem superior */
+            cursor: pointer;  /* Cursor de clique */
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra superior com link para o início -->
+    <div class="top-bar">
+        <a href="index.html">INÍCIO</a>
+    </div>
+
+    <!-- Container do jogo (instruções e canvas) -->
+    <div class="container">
+        <div class="instrucoes">
+            <h2>Instrução do Jogo</h2>
+            <p>Use as setas esquerda e direita para mover os blocos. Empilhe os blocos sem deixá-los cair! Se parte do bloco estiver sobre a pilha, o jogo continua.</p>
+        </div>
+        <canvas id="gameCanvas" width="300" height="404"></canvas>  <!-- Canvas onde o jogo será desenhado -->
+    </div>
+
+    <!-- Mensagem de fim de jogo -->
+    <div id="mensagem"></div>
+
+    <!-- Botão para reiniciar o jogo -->
+    <button class="reiniciar-btn" onclick="reiniciarJogo()">Reiniciar</button>
+
+    <script>
+        // Definições iniciais
+        const canvas = document.getElementById("gameCanvas");  // Obtém o canvas
+        const ctx = canvas.getContext("2d");  // Obtém o contexto para desenhar no canvas
+
+        const larguraBloco = 60;  // Largura do bloco
+        const alturaBloco = 25;   // Altura do bloco
+        let posicaoX = 120;       // Posição inicial do bloco no eixo X (centrado)
+        let posicaoY = 0;         // Posição inicial do bloco no eixo Y (cima)
+        let velocidadeY = 2;      // Velocidade com que o bloco desce
+        let blocosEmpilhados = []; // Array que armazena os blocos empilhados
+        let jogoAtivo = true;     // Variável para controlar se o jogo está ativo
+        const limiteBloco = 15;   // Limite de blocos a empilhar
+
+        // Função para reiniciar o jogo
+        function reiniciarJogo() {
+            posicaoX = 120;               // Reseta a posição do bloco para o centro
+            posicaoY = 0;                 // Reseta a posição do bloco no eixo Y
+            blocosEmpilhados = [];        // Limpa os blocos empilhados
+            jogoAtivo = true;             // Define que o jogo está ativo
+            document.getElementById("mensagem").textContent = ""; // Limpa a mensagem
+            atualizarJogo();              // Atualiza o jogo
+        }
+
+        // Função para atualizar o jogo a cada quadro
+        function atualizarJogo() {
+            if (!jogoAtivo) return; // Se o jogo não estiver ativo, não continua
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Limpa o canvas a cada quadro
+            
+            // Desenha o bloco atual
+            ctx.fillStyle = "red";  // Cor do bloco
+            ctx.beginPath();
+            ctx.roundRect(posicaoX, posicaoY, larguraBloco, alturaBloco, 10);  // Bloco redondo
+            ctx.fill();
+            
+            posicaoY += velocidadeY;  // O bloco desce conforme a velocidade
+            
+            // Verifica se o bloco tocou o fundo ou colidiu com outro bloco
+            if (posicaoY + alturaBloco >= canvas.height || colidiuComBloco()) {
+                if (!parteDoBlocoSobreAPilha()) {
+                    document.getElementById("mensagem").textContent = "Você perdeu! O bloco não tocou a pilha!";
+                    jogoAtivo = false;  // Acaba o jogo se o bloco não tocar a pilha
+                    return;
+                }
+                blocosEmpilhados.push({ x: posicaoX, y: posicaoY });  // Empilha o bloco
+                if (blocosEmpilhados.length >= limiteBloco) {
+                    document.getElementById("mensagem").textContent = "Parabéns! Você empilhou os blocos!";
+                    jogoAtivo = false;  // Acaba o jogo quando atinge o limite de blocos
+                }
+                posicaoY = 0;  // Reseta a posição do bloco
+                posicaoX = 120;  // Reseta a posição no eixo X
+            }
+            
+            // Desenha os blocos empilhados
+            ctx.fillStyle = "blue";  // Cor dos blocos empilhados
+            blocosEmpilhados.forEach(bloco => {
+                ctx.beginPath();
+                ctx.roundRect(bloco.x, bloco.y, larguraBloco, alturaBloco, 10);  // Desenha cada bloco empilhado
+                ctx.fill();
+            });
+            
+            requestAnimationFrame(atualizarJogo); // Chama a função novamente para continuar o loop
+        }
+
+        // Função para verificar colisão com blocos empilhados
+        function colidiuComBloco() {
+            return blocosEmpilhados.some(bloco =>
+                posicaoY + alturaBloco >= bloco.y &&
+                posicaoX < bloco.x + larguraBloco &&
+                posicaoX + larguraBloco > bloco.x
+            );
+        }
+
+        // Função para verificar se parte do bloco está sobre a pilha
+        function parteDoBlocoSobreAPilha() {
+            if (blocosEmpilhados.length === 0) return true;  // Se não houver blocos, o primeiro sempre pode cair
+            let ultimoBloco = blocosEmpilhados[blocosEmpilhados.length - 1];
+            return posicaoX + larguraBloco > ultimoBloco.x && posicaoX < ultimoBloco.x + larguraBloco;
+        }
+
+        // Função para mover o bloco com as teclas de seta
+        function moverBloco(event) {
+            if (event.key === "ArrowLeft" && posicaoX > 0) {
+                posicaoX -= 10;  // Move o bloco para a esquerda
+            } else if (event.key === "ArrowRight" && posicaoX + larguraBloco < canvas.width) {
+                posicaoX += 10;  // Move o bloco para a direita
+            }
+        }
+
+        // Adiciona o evento de pressionar tecla para mover os blocos
+        window.addEventListener("keydown", moverBloco);
+
+        // Inicia o loop de atualização do jogo
+        atualizarJogo();
+    </script>
+</body>
+</html>
